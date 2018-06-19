@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using GigHub3.Models;
 using GigHub3.ViewModels;
+using Microsoft.AspNet.Identity;
 
 namespace GigHub3.Controllers
 {
@@ -24,6 +25,7 @@ namespace GigHub3.Controllers
         //    return View();
         //}
 
+        [Authorize]
         public ActionResult Create()
         {
             var ViewModel = new GigFormViewModel
@@ -34,6 +36,29 @@ namespace GigHub3.Controllers
             };
 
            return View(ViewModel);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Create(GigFormViewModel viewModel)
+        {
+            var artistId = User.Identity.GetUserId();
+            var artist = _context.Users.Single(u => u.Id == artistId);
+            var genre = _context.Genres.Single(g => g.Id == viewModel.Genre);
+
+            var gig = new Gig
+            {
+                Artist = artist,
+                DateTime = DateTime.Parse(string.Format("{0} {1}", viewModel.Date, viewModel.Time)),
+                Genre = genre,
+                Venue = viewModel.Venue
+            };
+
+            _context.Gigs.Add(gig);
+            _context.SaveChanges();
+
+            return
+            RedirectToAction("Index", "Home");
         }
     }
 }
