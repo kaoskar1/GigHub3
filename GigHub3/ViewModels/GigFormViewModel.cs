@@ -12,9 +12,11 @@ namespace GigHub3.ViewModels
         public string Venue { get; set; }
 
         [Requierd]
+        [FutureDate]
         public string Date { get; set; }
 
         [Requierd]
+        [ValidTime]
         public string Time { get; set; }
 
         [Requierd]
